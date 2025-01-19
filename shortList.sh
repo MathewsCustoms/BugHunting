@@ -1,26 +1,24 @@
 #!/bin/bash
 
-# Ask the user for the number of letters
-read -p "Enter the number of letters: " num_letters
+# Prompt the user for input
+read -p "Enter the desired word length: " number
+read -p "Enter the path to the .txt file: " file
 
-# Ask the user for the path to the .txt file
-read -p "Enter the path to the .txt file: " file_path
-
-# Check if the file exists
-if [[ ! -f "$file_path" ]]; then
-  echo "The file does not exist. Please check the path and try again."
-  exit 1
+# Validate inputs
+if [[ ! -f "$file" ]]; then
+    echo "Error: File not found!"
+    exit 1
+fi
+if ! [[ "$number" =~ ^[0-9]+$ ]]; then
+    echo "Error: Please enter a valid number!"
+    exit 1
 fi
 
-# Extract the filename and extension
-base_name=$(basename "$file_path" .txt)
-dir_name=$(dirname "$file_path")
+# Generate output filename
+output_file="${file%.txt}_short.txt"
 
-# Create a new file name with "_short.txt"
-output_file="${dir_name}/${base_name}_short.txt"
+# Filter and save words with the specified length
+grep -oE "\b[[:alnum:]]{$number}\b" "$file" > "$output_file"
 
-# Filter words with the specified letter count and save to the new file
-grep -E "^[a-zA-Z]{$num_letters}$" "$file_path" > "$output_file"
-
-# Let the user know the operation is complete
-echo "Words with $num_letters letters have been saved to $output_file"
+# Confirm completion
+echo "Filtered words saved to $output_file"
